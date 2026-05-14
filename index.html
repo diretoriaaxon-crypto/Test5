@@ -52,7 +52,6 @@
 
         /* CARRINHO FLUTUANTE */
         #carrinho-float { position: fixed; bottom: 25px; right: 20px; background: var(--vermelho); color: white; width: 65px; height: 65px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 800; cursor: pointer; transition: transform 0.2s; border: 3px solid #fff; }
-        #carrinho-float:active { transform: scale(0.9); }
         #carrinho-badge { position: absolute; top: -5px; right: -5px; background: var(--amarelo); color: var(--marrom); font-weight: bold; font-size: 14px; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
     </style>
 </head>
@@ -80,8 +79,8 @@
         <p>
             📍 <span>Recanto das Emas</span> | 
             🛵 WhatsApp: 
-            <a href="https://api.whatsapp.com/send?phone=5561982297102&text=Ol%C3%A1%2C%20vim%20pelo%20card%C3%A1pio%21" class="link-whatsapp" target="_blank">
-                <span>(61) 98229-7102</span>
+            <a href="https://api.whatsapp.com/send?phone=5561982680826&text=Ol%C3%A1%2C%20vim%20pelo%20card%C3%A1pio%21" class="link-whatsapp" target="_blank">
+                <span>(61) 98268-0826</span>
             </a>
         </p>
         
@@ -164,14 +163,13 @@
     </div>
 
     <script>
-        // SEU BANCO DE DADOS
         const db = {
             destaques: [
                 {
                     nome: "Jantinha Completa",
                     desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho (frango, carne ou misto) e uma Ptchula grátis!",
                     preco: 20.00,
-                    foto: "Jantinha.png", // <--- NOME ATUALIZADO IGUAL NA PASTA
+                    foto: "Jantinha.png",
                     adicionais: [
                         { nome: "Ovo Frito", preco: 2.50 },
                         { nome: "Queijo Coalho", preco: 4.00 }
@@ -183,7 +181,7 @@
                     nome: "Jantinha Completa",
                     desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho (frango, carne ou misto) e uma Ptchula grátis!",
                     preco: 20.00,
-                    foto: "Jantinha.png", // <--- NOME ATUALIZADO IGUAL NA PASTA
+                    foto: "Jantinha.png",
                     adicionais: [
                         { nome: "Ovo Frito", preco: 2.50 },
                         { nome: "Queijo Coalho", preco: 4.00 }
@@ -197,7 +195,7 @@
                     nome: "Ptchula",
                     desc: "Refrigerante geladinho (250ml)",
                     preco: 3.50,
-                    foto: "pitchula.png", // <--- NOME ATUALIZADO IGUAL NA PASTA (pitchula.png)
+                    foto: "pitchula.png",
                     adicionais: []
                 }
             ],
@@ -206,7 +204,13 @@
 
         let abaAtual = 'destaques', itemAtual = null, carrinho = [], qtdAtual = 1, entregaAtiva = true;
 
-        window.onload = () => { verificarStatus(); mudarPara('destaques'); };
+        // INICIALIZAÇÃO IMEDIATA DO STATUS
+        verificarStatus();
+
+        window.onload = () => { 
+            verificarStatus(); 
+            mudarPara('destaques'); 
+        };
 
         function mascaraMoeda(i) {
             let v = i.value.replace(/\D/g, "");
@@ -217,6 +221,7 @@
 
         function toReal(v) { return (v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
 
+        // SISTEMA DE STATUS ULTRA RÁPIDO
         function verificarStatus() {
             let numeros = document.getElementById('horario-loja').innerText.match(/\d+/g); 
             let statusEl = document.getElementById('status-loja');
@@ -230,7 +235,7 @@
                 statusEl.style.background = aberto ? "#25D366" : "#BC0000";
             }
         }
-        setInterval(verificarStatus, 60000);
+        setInterval(verificarStatus, 30000); // Checa a cada 30 segundos
 
         function mudarPara(cat) {
             abaAtual = cat;
@@ -243,7 +248,7 @@
                     lista.innerHTML += `
                     <div class="card-produto" onclick="abrirModal('${cat}', ${i})">
                         <div class="produto-detalhe"><strong>${p.nome}</strong><br><small>${p.desc}</small><br><strong>R$ ${toReal(p.preco)}</strong></div>
-                        <div class="produto-img-box"><img src="${p.foto}" onerror="this.src='https://via.placeholder.com/100?text=Foto'"></div>
+                        <div class="produto-img-box"><img src="${p.foto}" onerror="this.src='https://via.placeholder.com/100'"></div>
                     </div>`;
                 });
             } else { lista.innerHTML += `<p style="text-align:center; color:#999; padding:20px;">Em breve novidades!</p>`; }
@@ -304,15 +309,16 @@
         function setEntrega(isE) {
             entregaAtiva = isE;
             document.getElementById('btn-entrega').style.background = isE ? 'var(--marrom)' : '#eee';
-            document.getElementById('btn-entrega').style.color = isE ? '#fff' : '#000';
             document.getElementById('btn-retirada').style.background = !isE ? 'var(--marrom)' : '#eee';
-            document.getElementById('btn-retirada').style.color = !isE ? '#fff' : '#000';
             document.getElementById('form-endereco').style.display = isE ? 'block' : 'none';
         }
 
         function verificarTroco() { document.getElementById('c-troco').style.display = document.getElementById('forma-pagamento').value === 'Dinheiro' ? 'block' : 'none'; }
 
         function enviarWhatsApp() {
+            // NÚMERO OFICIAL PARA PEDIDOS: 98268-0826
+            let zapOficial = "5561982680826";
+
             let txt = "*NOVO PEDIDO*\n\n", t = 0;
             carrinho.forEach(i => { txt += `*${i.qtd}x ${i.nome}*\n${i.adicionais.length>0?'Adic: '+i.adicionais.join(', ')+'\n':''}Subtotal: R$ ${toReal(i.total)}\n\n`; t += i.total; });
             txt += `*TOTAL: R$ ${toReal(t)}*\nPagamento: ${document.getElementById('forma-pagamento').value}\n`;
@@ -320,7 +326,7 @@
             if(entregaAtiva) txt += `\n*Endereço:* ${document.getElementById('c-bairro').value}, ${document.getElementById('c-quadra').value}, Conj ${document.getElementById('c-conjunto').value}, Casa ${document.getElementById('c-casa').value}, Nº ${document.getElementById('c-numero').value}`;
             else txt += "\n*Vou retirar no local*";
             carrinho = []; atualizarCarrinhoFlutuante(); document.getElementById('modal-checkout').classList.remove('aberto');
-            window.open(`https://api.whatsapp.com/send?phone=5561982297102&text=${encodeURIComponent(txt)}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?phone=${zapOficial}&text=${encodeURIComponent(txt)}`, '_blank');
         }
     </script>
 </body>
