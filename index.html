@@ -79,8 +79,8 @@
         <p>
             📍 <span>Recanto das Emas</span> | 
             🛵 WhatsApp: 
-            <a href="https://api.whatsapp.com/send?phone=5561982680826&text=Ol%C3%A1%2C%20vim%20pelo%20card%C3%A1pio%21" class="link-whatsapp" target="_blank">
-                <span>(61) 98268-0826</span>
+            <a href="https://api.whatsapp.com/send?phone=5561982680862&text=Ol%C3%A1%2C%20vim%20pelo%20card%C3%A1pio%21" class="link-whatsapp" target="_blank">
+                <span>(61) 98268-0862</span>
             </a>
         </p>
         
@@ -218,6 +218,15 @@
 
         let abaAtual = 'destaques', itemAtual = null, carrinho = [], qtdAtual = 1, entregaAtiva = true;
 
+        // =========================================================
+        // CARREGAMENTO IMEDIATO: O SEGREDO DO SUCESSO AQUI!
+        // Assim que o celular lê essa linha, ele já joga os botões e produtos na tela.
+        // =========================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            verificarStatus();
+            mudarPara('destaques');
+        });
+
         function mascaraMoeda(i) {
             let v = i.value.replace(/\D/g, "");
             v = (v / 100).toFixed(2).replace(".", ",");
@@ -233,7 +242,7 @@
             document.getElementById('custom-alert').style.display = 'flex';
         }
 
-        // STATUS INTELIGENTE
+        // STATUS INTELIGENTE RÁPIDO
         function verificarStatus() {
             try {
                 let txt = document.getElementById('horario-loja').innerText;
@@ -271,7 +280,7 @@
         }
         setInterval(verificarStatus, 60000); 
 
-        // RENDERIZAÇÃO FÍSICA DAS ABAS
+        // RENDERIZAÇÃO DAS ABAS INSTANTÂNEAS
         function mudarPara(cat) {
             abaAtual = cat;
             document.querySelectorAll('.nav-tabs span').forEach(s => s.classList.remove('ativa'));
@@ -424,7 +433,7 @@
         function enviarWhatsApp() {
             // ==========================================
             // AQUI ESTÁ O NÚMERO QUE RECEBE OS PEDIDOS
-            let numeroLoja = "5561982680826"; 
+            let numeroLoja = "5561982680862"; // <--- COM O 9!
             // ==========================================
 
             let txt = "*NOVO PEDIDO*\n\n", t = 0;
@@ -459,13 +468,6 @@
             // Abre o WhatsApp
             window.open(`https://api.whatsapp.com/send?phone=${numeroLoja}&text=${encodeURIComponent(txt)}`, '_blank');
         }
-
-        // =========================================================
-        // INICIALIZAÇÃO INSTANTÂNEA AO CARREGAR A PÁGINA (SEM ESPERAR FOTOS)
-        // =========================================================
-        verificarStatus();
-        mudarPara('destaques');
-
     </script>
 </body>
 </html>
