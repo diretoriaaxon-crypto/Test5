@@ -69,7 +69,7 @@
     <div class="topo-loja">
         <img src="banner.jpg" class="banner-loja" onerror="this.src='https://via.placeholder.com/800x140?text=Banner'">
         <div class="perfil-loja">
-            <img src="logo.jpg" onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
+            <img src="perfil.png" onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
         </div>
     </div>
 
@@ -157,20 +157,21 @@
                 <option value="Cartão">Cartão</option>
                 <option value="PIX">PIX</option>
             </select>
-            <input type="text" id="c-troco" class="input-form" placeholder="Troco para quanto?" oninput="mascaraMoeda(this)">
+            <input type="text" id="c-troco" class="input-form" placeholder="Troco para quanto?" oninput="mascaraMoeda(this)" style="display:block;">
             
             <button class="btn-final" style="background: #25D366;" onclick="enviarWhatsApp()">ENVIAR AO WHATSAPP 📱</button>
         </div>
     </div>
 
     <script>
+        // SEU BANCO DE DADOS
         const db = {
             destaques: [
                 {
                     nome: "Jantinha Completa",
                     desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho (frango, carne ou misto) e uma Ptchula grátis!",
                     preco: 20.00,
-                    foto: "jantinha.jpg",
+                    foto: "Jantinha.png", // <--- NOME ATUALIZADO IGUAL NA PASTA
                     adicionais: [
                         { nome: "Ovo Frito", preco: 2.50 },
                         { nome: "Queijo Coalho", preco: 4.00 }
@@ -182,7 +183,7 @@
                     nome: "Jantinha Completa",
                     desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho (frango, carne ou misto) e uma Ptchula grátis!",
                     preco: 20.00,
-                    foto: "jantinha.jpg",
+                    foto: "Jantinha.png", // <--- NOME ATUALIZADO IGUAL NA PASTA
                     adicionais: [
                         { nome: "Ovo Frito", preco: 2.50 },
                         { nome: "Queijo Coalho", preco: 4.00 }
@@ -196,7 +197,7 @@
                     nome: "Ptchula",
                     desc: "Refrigerante geladinho (250ml)",
                     preco: 3.50,
-                    foto: "pitchula.jpg",
+                    foto: "pitchula.png", // <--- NOME ATUALIZADO IGUAL NA PASTA (pitchula.png)
                     adicionais: []
                 }
             ],
@@ -229,6 +230,7 @@
                 statusEl.style.background = aberto ? "#25D366" : "#BC0000";
             }
         }
+        setInterval(verificarStatus, 60000);
 
         function mudarPara(cat) {
             abaAtual = cat;
@@ -241,7 +243,7 @@
                     lista.innerHTML += `
                     <div class="card-produto" onclick="abrirModal('${cat}', ${i})">
                         <div class="produto-detalhe"><strong>${p.nome}</strong><br><small>${p.desc}</small><br><strong>R$ ${toReal(p.preco)}</strong></div>
-                        <div class="produto-img-box"><img src="${p.foto}" onerror="this.src='https://via.placeholder.com/100'"></div>
+                        <div class="produto-img-box"><img src="${p.foto}" onerror="this.src='https://via.placeholder.com/100?text=Foto'"></div>
                     </div>`;
                 });
             } else { lista.innerHTML += `<p style="text-align:center; color:#999; padding:20px;">Em breve novidades!</p>`; }
@@ -302,7 +304,9 @@
         function setEntrega(isE) {
             entregaAtiva = isE;
             document.getElementById('btn-entrega').style.background = isE ? 'var(--marrom)' : '#eee';
+            document.getElementById('btn-entrega').style.color = isE ? '#fff' : '#000';
             document.getElementById('btn-retirada').style.background = !isE ? 'var(--marrom)' : '#eee';
+            document.getElementById('btn-retirada').style.color = !isE ? '#fff' : '#000';
             document.getElementById('form-endereco').style.display = isE ? 'block' : 'none';
         }
 
