@@ -10,10 +10,9 @@
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--gelo); overflow-x: hidden; }
         * { box-sizing: border-box; }
 
-        /* HEADER */
+        /* HEADER E FOTOS */
         .topo-loja { background: var(--amarelo); padding-bottom: 60px; text-align: center; position: relative; border-bottom: 4px solid #fff; }
         .banner-loja { height: 140px; background: var(--marrom); width: 100%; object-fit: cover; }
-        
         .perfil-loja { width: 105px; height: 105px; position: absolute; left: 50%; transform: translateX(-50%); bottom: -50px; z-index: 10; }
         .perfil-loja img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid white; object-fit: cover; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
@@ -40,7 +39,7 @@
         .modal-full.aberto { bottom: 0; }
         .modal-content { flex: 1; overflow-y: auto; padding: 20px; }
         .fechar-x { position: absolute; top: 15px; left: 15px; font-size: 22px; border: none; background: rgba(255,255,255,0.9); border-radius: 50%; width: 40px; height: 40px; font-weight: bold; z-index: 1100; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn-final { background: var(--vermelho); color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 17px; cursor: pointer; display: block; }
+        .btn-final { background: var(--vermelho); color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 17px; cursor: pointer; display: block; margin-top: 10px; }
         
         .box-adicional { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; align-items: center; }
         .btn-qtd { width: 40px; height: 40px; border-radius: 10px; border: none; font-size: 22px; font-weight: bold; background: #f0f0f0; color: var(--marrom); cursor: pointer; }
@@ -52,6 +51,7 @@
 
         /* CARRINHO FLUTUANTE */
         #carrinho-float { position: fixed; bottom: 25px; right: 20px; background: var(--vermelho); color: white; width: 65px; height: 65px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 800; cursor: pointer; transition: transform 0.2s; border: 3px solid #fff; }
+        #carrinho-float:active { transform: scale(0.9); }
         #carrinho-badge { position: absolute; top: -5px; right: -5px; background: var(--amarelo); color: var(--marrom); font-weight: bold; font-size: 14px; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
     </style>
 </head>
@@ -73,7 +73,7 @@
     </div>
 
     <div class="info-container">
-        <h2 id="nome-loja-txt">Parada Obrigatória</h2>
+        <h2>Parada Obrigatória</h2>
         <p style="font-size: 1.5em; font-weight: bold; color: var(--marrom); margin-top: 0; margin-bottom: 5px;">Cardápio</p>
         
         <p>
@@ -112,15 +112,21 @@
             <div style="height: 250px; background: #eee; position: relative; border-radius: 15px; overflow: hidden;">
                 <img id="m-foto" src="" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <h2 id="m-nome" style="margin-top:20px;">Nome</h2>
-            <p id="m-desc" style="color:#666;">Descrição</p>
-            <div style="margin: 15px 0;"><span style="color:var(--vermelho); font-weight:bold; font-size: 1.2em;" id="m-preco-texto">R$ 0,00</span></div>
             
-            <hr><h4>Quantidade</h4>
-            <div style="display: flex; align-items: center; gap: 25px;">
-                <button onclick="mudarQtd(-1)" class="btn-qtd">−</button>
-                <span id="txt-qtd" style="font-size: 22px; font-weight: bold;">1</span>
-                <button onclick="mudarQtd(1)" class="btn-qtd">+</button>
+            <h2 id="m-nome" style="margin-top:20px;">Nome do Produto</h2>
+            <p id="m-desc" style="color:#666;">Descrição do produto</p>
+               
+            <div style="margin: 15px 0;">
+                <span style="color:var(--vermelho); font-weight:bold; font-size: 1.2em;" id="m-preco-texto">R$ 0,00</span>
+            </div>
+            
+            <div id="area-quantidade">
+                <hr><h4>Quantidade</h4>
+                <div style="display: flex; align-items: center; gap: 25px;">
+                    <button onclick="mudarQtd(-1)" class="btn-qtd">−</button>
+                    <span id="txt-qtd" style="font-size: 22px; font-weight: bold;">1</span>
+                    <button onclick="mudarQtd(1)" class="btn-qtd">+</button>
+                </div>
             </div>
 
             <div id="area-adicionais">
@@ -128,7 +134,10 @@
                 <div id="lista-adicionais"></div>
             </div>
         </div>
-        <div style="padding: 10px;"><button id="btn-acao-modal" class="btn-final" onclick="adicionarAoCarrinho()">ADICIONAR</button></div>
+        
+        <div style="padding: 10px;">
+            <button id="btn-acao-modal" class="btn-final" onclick="adicionarAoCarrinho()">ADICIONAR R$ 0,00</button>
+        </div>
     </div>
 
     <div id="modal-checkout" class="modal-full" style="z-index: 1500;">
@@ -156,13 +165,17 @@
                 <option value="Cartão">Cartão</option>
                 <option value="PIX">PIX</option>
             </select>
-            <input type="text" id="c-troco" class="input-form" placeholder="Troco para quanto?" oninput="mascaraMoeda(this)" style="display:block;">
+            
+            <input type="text" id="c-troco" class="input-form" placeholder="Troco para quanto? (Ex: 50,00)" style="display:block;" oninput="mascaraMoeda(this)">
             
             <button class="btn-final" style="background: #25D366;" onclick="enviarWhatsApp()">ENVIAR AO WHATSAPP 📱</button>
         </div>
     </div>
 
     <script>
+        // =========================================================
+        // SEU BANCO DE DADOS FÍSICO (ESCREVA SEUS PRODUTOS AQUI)
+        // =========================================================
         const db = {
             destaques: [
                 {
@@ -201,16 +214,9 @@
             ],
             sobremesa: []
         };
+        // =========================================================
 
         let abaAtual = 'destaques', itemAtual = null, carrinho = [], qtdAtual = 1, entregaAtiva = true;
-
-        // INICIALIZAÇÃO IMEDIATA DO STATUS
-        verificarStatus();
-
-        window.onload = () => { 
-            verificarStatus(); 
-            mudarPara('destaques'); 
-        };
 
         function mascaraMoeda(i) {
             let v = i.value.replace(/\D/g, "");
@@ -221,113 +227,245 @@
 
         function toReal(v) { return (v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
 
-        // SISTEMA DE STATUS ULTRA RÁPIDO
-        function verificarStatus() {
-            let numeros = document.getElementById('horario-loja').innerText.match(/\d+/g); 
-            let statusEl = document.getElementById('status-loja');
-            if(numeros && numeros.length >= 4) {
-                let agora = new Date();
-                let tAtual = agora.getHours() * 60 + agora.getMinutes();
-                let tAbre = parseInt(numeros[0]) * 60 + parseInt(numeros[1]);
-                let tFecha = parseInt(numeros[2]) * 60 + parseInt(numeros[3]);
-                let aberto = tFecha < tAbre ? (tAtual >= tAbre || tAtual <= tFecha) : (tAtual >= tAbre && tAtual <= tFecha);
-                statusEl.innerText = aberto ? "🟢 ABERTO AGORA" : "🔴 FECHADO";
-                statusEl.style.background = aberto ? "#25D366" : "#BC0000";
-            }
+        function mostrarAlerta(titulo, msg) {
+            document.getElementById('alert-title').innerText = titulo;
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').style.display = 'flex';
         }
-        setInterval(verificarStatus, 30000); // Checa a cada 30 segundos
 
+        // STATUS INTELIGENTE
+        function verificarStatus() {
+            try {
+                let txt = document.getElementById('horario-loja').innerText;
+                let numeros = txt.match(/\d+/g); 
+                let statusEl = document.getElementById('status-loja');
+                
+                if(numeros && numeros.length >= 4) {
+                    let hAbre = parseInt(numeros[0]); let mAbre = parseInt(numeros[1]);
+                    let hFecha = parseInt(numeros[2]); let mFecha = parseInt(numeros[3]);
+                    
+                    let agora = new Date();
+                    let hAtual = agora.getHours(); let mAtual = agora.getMinutes();
+                    
+                    let tAtual = hAtual * 60 + mAtual;
+                    let tAbre = hAbre * 60 + mAbre;
+                    let tFecha = hFecha * 60 + mFecha;
+                    
+                    let aberto = false;
+                    
+                    if(tFecha < tAbre) {
+                        if(tAtual >= tAbre || tAtual <= tFecha) aberto = true;
+                    } else {
+                        if(tAtual >= tAbre && tAtual <= tFecha) aberto = true;
+                    }
+                    
+                    if(aberto) {
+                        statusEl.innerText = "🟢 ABERTO AGORA";
+                        statusEl.style.background = "#25D366";
+                    } else {
+                        statusEl.innerText = "🔴 FECHADO";
+                        statusEl.style.background = "#BC0000";
+                    }
+                }
+            } catch(e) {}
+        }
+        setInterval(verificarStatus, 60000); 
+
+        // RENDERIZAÇÃO FÍSICA DAS ABAS
         function mudarPara(cat) {
             abaAtual = cat;
             document.querySelectorAll('.nav-tabs span').forEach(s => s.classList.remove('ativa'));
             document.getElementById('aba-' + cat).classList.add('ativa');
+
             const lista = document.getElementById('lista-itens');
             lista.innerHTML = `<h3>${cat.toUpperCase()}</h3>`;
-            if(db[cat].length > 0) {
+            
+            if(db[cat] && db[cat].length > 0) {
                 db[cat].forEach((p, i) => {
                     lista.innerHTML += `
                     <div class="card-produto" onclick="abrirModal('${cat}', ${i})">
-                        <div class="produto-detalhe"><strong>${p.nome}</strong><br><small>${p.desc}</small><br><strong>R$ ${toReal(p.preco)}</strong></div>
-                        <div class="produto-img-box"><img src="${p.foto}" onerror="this.src='https://via.placeholder.com/100'"></div>
+                        <div class="produto-detalhe">
+                            <strong>${p.nome}</strong><br><small>${p.desc}</small><br>
+                            <strong>R$ ${toReal(p.preco)}</strong>
+                        </div>
+                        <div class="produto-img-box"><img src="${p.foto}" onerror="this.src='https://via.placeholder.com/100?text=Foto'"></div>
                     </div>`;
                 });
-            } else { lista.innerHTML += `<p style="text-align:center; color:#999; padding:20px;">Em breve novidades!</p>`; }
+            } else {
+                lista.innerHTML += `<p style="text-align:center; color:#999; padding:20px;">Em breve novidades nesta categoria!</p>`;
+            }
         }
 
         function abrirModal(cat, index) {
-            itemAtual = { cat, index }; const p = db[cat][index]; qtdAtual = 1;
+            itemAtual = { cat, index };
+            const p = db[cat][index];
+            qtdAtual = 1;
+
             document.getElementById('m-nome').innerText = p.nome;
             document.getElementById('m-desc').innerText = p.desc;
             document.getElementById('m-foto').src = p.foto;
             document.getElementById('m-preco-texto').innerText = `R$ ${toReal(p.preco)}`;
             document.getElementById('txt-qtd').innerText = qtdAtual;
-            const area = document.getElementById('lista-adicionais'); area.innerHTML = "";
-            (p.adicionais || []).forEach(a => {
-                area.innerHTML += `<div class="box-adicional"><span>${a.nome} (+ R$ ${toReal(a.preco)})</span><input type="checkbox" class="add-check" value="${a.preco}" data-nome="${a.nome}" onchange="calcPreco()"></div>`;
+            
+            const area = document.getElementById('lista-adicionais');
+            area.innerHTML = "";
+            (p.adicionais || []).forEach((a, idx) => {
+                area.innerHTML += `
+                    <div class="box-adicional">
+                        <span>${a.nome} (+ R$ ${toReal(a.preco)})</span>
+                        <input type="checkbox" class="add-check" value="${a.preco}" data-nome="${a.nome}" onchange="calcPreco()">
+                    </div>`;
             });
-            calcPreco(); document.getElementById('modal-produto').classList.add('aberto');
+
+            calcPreco();
+            document.getElementById('modal-produto').classList.add('aberto');
         }
 
         function calcPreco() {
             const p = db[itemAtual.cat][itemAtual.index];
-            let vAdds = 0; document.querySelectorAll('.add-check:checked').forEach(c => vAdds += parseFloat(c.value));
-            document.getElementById('btn-acao-modal').innerText = "ADICIONAR R$ " + toReal((p.preco * qtdAtual) + vAdds);
+            let vAdds = 0;
+            document.querySelectorAll('.add-check:checked').forEach(c => vAdds += parseFloat(c.value));
+            let total = (p.preco * qtdAtual) + vAdds;
+            document.getElementById('btn-acao-modal').innerText = "ADICIONAR R$ " + toReal(total);
         }
 
-        function mudarQtd(v) { if(qtdAtual + v > 0) { qtdAtual += v; document.getElementById('txt-qtd').innerText = qtdAtual; calcPreco(); } }
+        function mudarQtd(v) { 
+            if(qtdAtual + v > 0) { 
+                qtdAtual += v; 
+                document.getElementById('txt-qtd').innerText = qtdAtual; 
+                calcPreco(); 
+            } 
+        }
 
         function adicionarAoCarrinho() {
             const p = db[itemAtual.cat][itemAtual.index];
-            let vAdds = 0, addsNames = [];
-            document.querySelectorAll('.add-check:checked').forEach(cb => { addsNames.push(cb.getAttribute('data-nome')); vAdds += parseFloat(cb.value); });
-            carrinho.push({ nome: p.nome, qtd: qtdAtual, total: (p.preco * qtdAtual) + vAdds, adicionais: addsNames });
+            let vAdds = 0; let addsNames = [];
+            document.querySelectorAll('.add-check:checked').forEach(cb => { 
+                addsNames.push(cb.getAttribute('data-nome')); 
+                vAdds += parseFloat(cb.value); 
+            });
+            
+            carrinho.push({ 
+                nome: p.nome, 
+                qtd: qtdAtual, 
+                total: (p.preco * qtdAtual) + vAdds, 
+                adicionais: addsNames 
+            });
+            
             document.getElementById('modal-produto').classList.remove('aberto');
             atualizarCarrinhoFlutuante();
+            mostrarAlerta("Sucesso", "Item adicionado ao seu pedido!");
         }
 
         function atualizarCarrinhoFlutuante() {
-            const floatCart = document.getElementById('carrinho-float');
-            if (carrinho.length > 0) {
+            let floatCart = document.getElementById('carrinho-float');
+            let badge = document.getElementById('carrinho-badge');
+            
+            if (carrinho.length === 0) {
+                floatCart.style.display = 'none';
+            } else {
                 floatCart.style.display = 'flex';
-                document.getElementById('carrinho-badge').innerText = carrinho.reduce((sum, i) => sum + i.qtd, 0);
-            } else { floatCart.style.display = 'none'; }
+                let qtdTotal = carrinho.reduce((sum, item) => sum + item.qtd, 0);
+                badge.innerText = qtdTotal;
+            }
         }
 
         function abrirCheckout() {
+            if(!carrinho.length) return mostrarAlerta("Vazio", "Seu carrinho está vazio");
+            
             let h = '', t = 0;
             carrinho.forEach((item, i) => {
                 t += item.total;
-                h += `<div style="padding:10px 0;border-bottom:1px solid #eee;"><strong>${item.qtd}x ${item.nome}</strong> <button onclick="removerItem(${i})" style="float:right;color:red;background:none;border:none;font-weight:bold;font-size:18px;">X</button><br><small>${item.adicionais.join(', ')}</small><br><strong>R$ ${toReal(item.total)}</strong></div>`;
+                h += `
+                <div style="padding:10px 0;border-bottom:1px solid #eee;">
+                    <strong>${item.qtd}x ${item.nome}</strong> 
+                    <button onclick="removerDoCarrinho(${i})" style="float:right;color:red;background:none;border:none;font-weight:bold;font-size:18px;cursor:pointer;">X</button><br>
+                    <small>${item.adicionais.join(', ')}</small><br>
+                    <strong>R$ ${toReal(item.total)}</strong>
+                </div>`;
             });
+            
             document.getElementById('resumo-carrinho').innerHTML = h;
             document.getElementById('checkout-total').innerText = toReal(t);
-            verificarTroco(); document.getElementById('modal-checkout').classList.add('aberto');
+            verificarTroco(); 
+            document.getElementById('modal-checkout').classList.add('aberto');
         }
 
-        function removerItem(i) { carrinho.splice(i, 1); atualizarCarrinhoFlutuante(); carrinho.length > 0 ? abrirCheckout() : document.getElementById('modal-checkout').classList.remove('aberto'); }
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinhoFlutuante();
+            if(carrinho.length === 0) {
+                document.getElementById('modal-checkout').classList.remove('aberto');
+                mostrarAlerta("Carrinho Vazio", "Seu carrinho está vazio agora.");
+            } else {
+                abrirCheckout(); 
+            }
+        }
 
         function setEntrega(isE) {
             entregaAtiva = isE;
             document.getElementById('btn-entrega').style.background = isE ? 'var(--marrom)' : '#eee';
+            document.getElementById('btn-entrega').style.color = isE ? '#fff' : '#000';
             document.getElementById('btn-retirada').style.background = !isE ? 'var(--marrom)' : '#eee';
+            document.getElementById('btn-retirada').style.color = !isE ? '#fff' : '#000';
             document.getElementById('form-endereco').style.display = isE ? 'block' : 'none';
         }
 
-        function verificarTroco() { document.getElementById('c-troco').style.display = document.getElementById('forma-pagamento').value === 'Dinheiro' ? 'block' : 'none'; }
+        function verificarTroco() {
+            var pag = document.getElementById('forma-pagamento').value;
+            if(pag === 'Dinheiro') {
+                document.getElementById('c-troco').style.display = 'block';
+            } else {
+                document.getElementById('c-troco').style.display = 'none';
+                document.getElementById('c-troco').value = '';
+            }
+        }
 
         function enviarWhatsApp() {
-            // NÚMERO OFICIAL PARA PEDIDOS: 98268-0826
-            let zapOficial = "5561982680826";
+            // ==========================================
+            // AQUI ESTÁ O NÚMERO QUE RECEBE OS PEDIDOS
+            let numeroLoja = "5561982680826"; 
+            // ==========================================
 
             let txt = "*NOVO PEDIDO*\n\n", t = 0;
-            carrinho.forEach(i => { txt += `*${i.qtd}x ${i.nome}*\n${i.adicionais.length>0?'Adic: '+i.adicionais.join(', ')+'\n':''}Subtotal: R$ ${toReal(i.total)}\n\n`; t += i.total; });
-            txt += `*TOTAL: R$ ${toReal(t)}*\nPagamento: ${document.getElementById('forma-pagamento').value}\n`;
-            if (document.getElementById('forma-pagamento').value === 'Dinheiro') txt += `Troco: R$ ${document.getElementById('c-troco').value || 'Não precisa'}\n`;
-            if(entregaAtiva) txt += `\n*Endereço:* ${document.getElementById('c-bairro').value}, ${document.getElementById('c-quadra').value}, Conj ${document.getElementById('c-conjunto').value}, Casa ${document.getElementById('c-casa').value}, Nº ${document.getElementById('c-numero').value}`;
-            else txt += "\n*Vou retirar no local*";
-            carrinho = []; atualizarCarrinhoFlutuante(); document.getElementById('modal-checkout').classList.remove('aberto');
-            window.open(`https://api.whatsapp.com/send?phone=${zapOficial}&text=${encodeURIComponent(txt)}`, '_blank');
+            carrinho.forEach(i => { 
+                txt += `*${i.qtd}x ${i.nome}*\n`;
+                if(i.adicionais.length > 0) txt += `Adic: ${i.adicionais.join(', ')}\n`;
+                txt += `Subtotal: R$ ${toReal(i.total)}\n\n`; 
+                t += i.total; 
+            });
+            
+            txt += `*TOTAL: R$ ${toReal(t)}*\n`;
+            
+            let pag = document.getElementById('forma-pagamento').value;
+            txt += `Pagamento: ${pag}\n`;
+            if (pag === 'Dinheiro') {
+                let troco = document.getElementById('c-troco').value;
+                if(troco) txt += `Troco para: R$ ${troco}\n`;
+                else txt += `Troco para: Não precisa\n`;
+            }
+
+            if(entregaAtiva) {
+                txt += `\n*Endereço de Entrega:*\nBairro: ${document.getElementById('c-bairro').value}\nQuadra/Rua: ${document.getElementById('c-quadra').value}\nConjunto: ${document.getElementById('c-conjunto').value}\nCasa/Lote: ${document.getElementById('c-casa').value}\nNúmero: ${document.getElementById('c-numero').value}`;
+            } else {
+                txt += "\n*Vou retirar no local*";
+            }
+
+            // Limpa o carrinho e fecha o modal
+            carrinho = [];
+            atualizarCarrinhoFlutuante();
+            document.getElementById('modal-checkout').classList.remove('aberto');
+            
+            // Abre o WhatsApp
+            window.open(`https://api.whatsapp.com/send?phone=${numeroLoja}&text=${encodeURIComponent(txt)}`, '_blank');
         }
+
+        // =========================================================
+        // INICIALIZAÇÃO INSTANTÂNEA AO CARREGAR A PÁGINA (SEM ESPERAR FOTOS)
+        // =========================================================
+        verificarStatus();
+        mudarPara('destaques');
+
     </script>
 </body>
 </html>
