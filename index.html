@@ -53,15 +53,25 @@
         #carrinho-float { position: fixed; bottom: 25px; right: 20px; background: var(--vermelho); color: white; width: 65px; height: 65px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 800; cursor: pointer; transition: transform 0.2s; border: 3px solid #fff; }
         #carrinho-float:active { transform: scale(0.9); }
         #carrinho-badge { position: absolute; top: -5px; right: -5px; background: var(--amarelo); color: var(--marrom); font-weight: bold; font-size: 14px; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+
+        /* ESTEIRA "TURBINE SEU PEDIDO" */
+        .turbine-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 10px 0; scrollbar-width: none; }
+        .turbine-scroll::-webkit-scrollbar { display: none; }
+        .turbine-card { min-width: 130px; max-width: 130px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .turbine-img { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; }
+        .turbine-nome { font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; color: var(--marrom); }
+        .turbine-preco { color: var(--vermelho); font-size: 14px; font-weight: bold; margin-bottom: 10px; }
+        .btn-turbine { background: #25D366; color: white; border: none; border-radius: 8px; padding: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 12px;}
     </style>
 </head>
 <body id="corpo-site">
 
     <div id="custom-alert" class="custom-alert-overlay">
         <div class="custom-alert-box">
-            <h3 id="alert-title">Aviso</h3>
-            <p id="alert-msg">Mensagem</p>
-            <button onclick="document.getElementById('custom-alert').style.display='none'" class="btn-final" style="background:var(--amarelo); color:#000;">ENTENDI</button>
+            <div id="alert-icon" style="font-size: 55px; margin-bottom: 10px;">✅</div>
+            <h3 id="alert-title" style="margin-top: 0; color: var(--marrom);">Sucesso!</h3>
+            <p id="alert-msg" style="color: #666;">Adicionado com sucesso ao carrinho!</p>
+            <button onclick="document.getElementById('custom-alert').style.display='none'" class="btn-final" style="background:#25D366; color:#fff; padding: 15px;">OK</button>
         </div>
     </div>
 
@@ -144,8 +154,15 @@
         <button class="fechar-x" onclick="document.getElementById('modal-checkout').classList.remove('aberto')">✕</button>
         <div class="modal-content" style="padding-top: 50px;">
             <h2>Seu Pedido</h2>
+            
             <div id="resumo-carrinho" style="background: #fff; padding: 15px; border-radius: 15px; border: 1px solid #eee;"></div>
+            
+            <h3 style="margin-top: 25px; color: var(--laranja); font-size: 16px;">🔥 Turbine seu pedido:</h3>
+            <div id="lista-turbine" class="turbine-scroll">
+                </div>
+
             <h3 style="text-align: right; margin-top:15px;">Total: R$ <span id="checkout-total">0,00</span></h3>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
             
             <div style="display:flex; gap:10px; margin:20px 0;">
                 <button onclick="setEntrega(true)" id="btn-entrega" style="flex:1; padding:15px; border-radius:10px; border:none; background:var(--marrom); color:white; font-weight:bold;">Entrega</button>
@@ -210,6 +227,13 @@
                     preco: 3.50,
                     foto: "pitchula.png",
                     adicionais: []
+                },
+                {
+                    nome: "Coca-Cola Lata",
+                    desc: "350ml",
+                    preco: 5.00,
+                    foto: "https://via.placeholder.com/100?text=Coca", // Troque depois
+                    adicionais: []
                 }
             ],
             sobremesa: []
@@ -219,8 +243,7 @@
         let abaAtual = 'destaques', itemAtual = null, carrinho = [], qtdAtual = 1, entregaAtiva = true;
 
         // =========================================================
-        // CARREGAMENTO IMEDIATO: O SEGREDO DO SUCESSO AQUI!
-        // Assim que o celular lê essa linha, ele já joga os botões e produtos na tela.
+        // CARREGAMENTO IMEDIATO! (Tiro de Largada)
         // =========================================================
         document.addEventListener("DOMContentLoaded", () => {
             verificarStatus();
@@ -236,13 +259,24 @@
 
         function toReal(v) { return (v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
 
-        function mostrarAlerta(titulo, msg) {
-            document.getElementById('alert-title').innerText = titulo;
+        // ALERTA DE SUCESSO (ESTILO APP)
+        function mostrarAlertaSucesso(msg) {
+            document.getElementById('alert-icon').innerText = "✅";
+            document.getElementById('alert-icon').style.color = ""; // Volta a cor pro padrão do emoji
+            document.getElementById('alert-title').innerText = "Sucesso!";
             document.getElementById('alert-msg').innerText = msg;
             document.getElementById('custom-alert').style.display = 'flex';
         }
 
-        // STATUS INTELIGENTE RÁPIDO
+        // ALERTA DE ERRO/AVISO
+        function mostrarAlertaErro(msg) {
+            document.getElementById('alert-icon').innerText = "⚠️";
+            document.getElementById('alert-title').innerText = "Aviso";
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+
+        // STATUS INTELIGENTE
         function verificarStatus() {
             try {
                 let txt = document.getElementById('horario-loja').innerText;
@@ -261,7 +295,6 @@
                     let tFecha = hFecha * 60 + mFecha;
                     
                     let aberto = false;
-                    
                     if(tFecha < tAbre) {
                         if(tAtual >= tAbre || tAtual <= tFecha) aberto = true;
                     } else {
@@ -363,7 +396,7 @@
             
             document.getElementById('modal-produto').classList.remove('aberto');
             atualizarCarrinhoFlutuante();
-            mostrarAlerta("Sucesso", "Item adicionado ao seu pedido!");
+            mostrarAlertaSucesso("Adicionado com sucesso ao seu pedido!");
         }
 
         function atualizarCarrinhoFlutuante() {
@@ -379,8 +412,43 @@
             }
         }
 
+        // ==========================================
+        // RENDERIZA A ESTEIRA "TURBINE SEU PEDIDO"
+        // ==========================================
+        function renderizarTurbine() {
+            let area = document.getElementById('lista-turbine');
+            area.innerHTML = '';
+            
+            if(db.bebidas && db.bebidas.length > 0) {
+                db.bebidas.forEach((b, index) => {
+                    area.innerHTML += `
+                    <div class="turbine-card">
+                        <img src="${b.foto}" class="turbine-img" onerror="this.src='https://via.placeholder.com/70'">
+                        <div class="turbine-nome">${b.nome}</div>
+                        <div class="turbine-preco">R$ ${toReal(b.preco)}</div>
+                        <button onclick="adicionarTurbine('bebidas', ${index})" class="btn-turbine">+ Add</button>
+                    </div>`;
+                });
+            } else {
+                area.innerHTML = `<p style="font-size:12px; color:#999;">Cadastre bebidas para exibir ofertas aqui.</p>`;
+            }
+        }
+
+        function adicionarTurbine(cat, index) {
+            const p = db[cat][index];
+            carrinho.push({ 
+                nome: p.nome, 
+                qtd: 1, 
+                total: p.preco, 
+                adicionais: [] 
+            });
+            abrirCheckout(); // Atualiza a tela de checkout na hora
+            atualizarCarrinhoFlutuante();
+            mostrarAlertaSucesso(`${p.nome} adicionado!`);
+        }
+
         function abrirCheckout() {
-            if(!carrinho.length) return mostrarAlerta("Vazio", "Seu carrinho está vazio");
+            if(!carrinho.length) return mostrarAlertaErro("Seu carrinho está vazio");
             
             let h = '', t = 0;
             carrinho.forEach((item, i) => {
@@ -397,6 +465,9 @@
             document.getElementById('resumo-carrinho').innerHTML = h;
             document.getElementById('checkout-total').innerText = toReal(t);
             verificarTroco(); 
+            
+            renderizarTurbine(); // Carrega os produtos da esteira
+            
             document.getElementById('modal-checkout').classList.add('aberto');
         }
 
@@ -405,7 +476,7 @@
             atualizarCarrinhoFlutuante();
             if(carrinho.length === 0) {
                 document.getElementById('modal-checkout').classList.remove('aberto');
-                mostrarAlerta("Carrinho Vazio", "Seu carrinho está vazio agora.");
+                mostrarAlertaErro("Seu carrinho está vazio agora.");
             } else {
                 abrirCheckout(); 
             }
@@ -431,10 +502,8 @@
         }
 
         function enviarWhatsApp() {
-            // ==========================================
-            // AQUI ESTÁ O NÚMERO QUE RECEBE OS PEDIDOS
-            let numeroLoja = "5561982680862"; // <--- COM O 9!
-            // ==========================================
+            // NÚMERO DO WHATSAPP (COM 9)
+            let numeroLoja = "5561982680862"; 
 
             let txt = "*NOVO PEDIDO*\n\n", t = 0;
             carrinho.forEach(i => { 
@@ -460,12 +529,10 @@
                 txt += "\n*Vou retirar no local*";
             }
 
-            // Limpa o carrinho e fecha o modal
             carrinho = [];
             atualizarCarrinhoFlutuante();
             document.getElementById('modal-checkout').classList.remove('aberto');
             
-            // Abre o WhatsApp
             window.open(`https://api.whatsapp.com/send?phone=${numeroLoja}&text=${encodeURIComponent(txt)}`, '_blank');
         }
     </script>
