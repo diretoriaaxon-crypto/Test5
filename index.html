@@ -103,10 +103,10 @@
     <div class="nav-tabs" id="menu-tabs">
         <span id="aba-destaques" class="ativa" onclick="mudarPara('destaques')">Destaques</span>
         <span id="aba-jantinha" onclick="mudarPara('jantinha')">Jantinha</span>
-        <span id="aba-lanches" onclick="mudarPara('lanches')">Lanches</span>
-        <span id="aba-promocoes" onclick="mudarPara('promocoes')">Promoções</span>
+        <span id="aba-espetos" onclick="mudarPara('espetos')">Espetos</span>
+        <span id="aba-porcoes" onclick="mudarPara('porcoes')">Porções</span>
+        <span id="aba-caldos" onclick="mudarPara('caldos')">Caldos</span>
         <span id="aba-bebidas" onclick="mudarPara('bebidas')">Bebidas</span>
-        <span id="aba-sobremesa" onclick="mudarPara('sobremesa')">Sobremesas</span>
     </div>
 
     <div id="lista-itens" class="lista-itens"></div>
@@ -191,13 +191,13 @@
 
     <script>
         // =========================================================
-        // SEU BANCO DE DADOS FÍSICO (ESCREVA SEUS PRODUTOS AQUI)
+        // SEU BANCO DE DADOS FÍSICO COM AS NOVAS CATEGORIAS
         // =========================================================
         const db = {
             destaques: [
                 {
                     nome: "Jantinha Completa",
-                    desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho (frango, carne ou misto) e uma Ptchula grátis!",
+                    desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho e uma Ptchula grátis!",
                     preco: 20.00,
                     foto: "Jantinha.png",
                     adicionais: [
@@ -209,7 +209,7 @@
             jantinha: [
                 {
                     nome: "Jantinha Completa",
-                    desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho (frango, carne ou misto) e uma Ptchula grátis!",
+                    desc: "Arroz, feijão tropeiro, vinagrete, mandioca, espetinho e uma Ptchula grátis!",
                     preco: 20.00,
                     foto: "Jantinha.png",
                     adicionais: [
@@ -218,8 +218,16 @@
                     ]
                 }
             ],
-            lanches: [],
-            promocoes: [],
+            espetos: [
+                // Coloque seus espetos aqui! Exemplo:
+                // { nome: "Espeto de Carne", desc: "Acompanha farofa", preco: 8.00, foto: "carne.png", adicionais: [] }
+            ],
+            porcoes: [
+                // Coloque suas porções aqui!
+            ],
+            caldos: [
+                // Coloque seus caldos aqui!
+            ],
             bebidas: [
                 {
                     nome: "Ptchula",
@@ -227,24 +235,14 @@
                     preco: 3.50,
                     foto: "pitchula.png",
                     adicionais: []
-                },
-                {
-                    nome: "Coca-Cola Lata",
-                    desc: "350ml",
-                    preco: 5.00,
-                    foto: "https://via.placeholder.com/100?text=Coca", // Troque depois
-                    adicionais: []
                 }
-            ],
-            sobremesa: []
+            ]
         };
         // =========================================================
 
         let abaAtual = 'destaques', itemAtual = null, carrinho = [], qtdAtual = 1, entregaAtiva = true;
 
-        // =========================================================
-        // CARREGAMENTO IMEDIATO! (Tiro de Largada)
-        // =========================================================
+        // INICIALIZAÇÃO INSTANTÂNEA
         document.addEventListener("DOMContentLoaded", () => {
             verificarStatus();
             mudarPara('destaques');
@@ -262,13 +260,11 @@
         // ALERTA DE SUCESSO (ESTILO APP)
         function mostrarAlertaSucesso(msg) {
             document.getElementById('alert-icon').innerText = "✅";
-            document.getElementById('alert-icon').style.color = ""; // Volta a cor pro padrão do emoji
             document.getElementById('alert-title').innerText = "Sucesso!";
             document.getElementById('alert-msg').innerText = msg;
             document.getElementById('custom-alert').style.display = 'flex';
         }
 
-        // ALERTA DE ERRO/AVISO
         function mostrarAlertaErro(msg) {
             document.getElementById('alert-icon').innerText = "⚠️";
             document.getElementById('alert-title').innerText = "Aviso";
@@ -313,7 +309,7 @@
         }
         setInterval(verificarStatus, 60000); 
 
-        // RENDERIZAÇÃO DAS ABAS INSTANTÂNEAS
+        // RENDERIZAÇÃO DAS ABAS
         function mudarPara(cat) {
             abaAtual = cat;
             document.querySelectorAll('.nav-tabs span').forEach(s => s.classList.remove('ativa'));
@@ -414,23 +410,32 @@
 
         // ==========================================
         // RENDERIZA A ESTEIRA "TURBINE SEU PEDIDO"
+        // Agora varre Espetos, Porções, Caldos e Bebidas
         // ==========================================
         function renderizarTurbine() {
             let area = document.getElementById('lista-turbine');
             area.innerHTML = '';
             
-            if(db.bebidas && db.bebidas.length > 0) {
-                db.bebidas.forEach((b, index) => {
-                    area.innerHTML += `
-                    <div class="turbine-card">
-                        <img src="${b.foto}" class="turbine-img" onerror="this.src='https://via.placeholder.com/70'">
-                        <div class="turbine-nome">${b.nome}</div>
-                        <div class="turbine-preco">R$ ${toReal(b.preco)}</div>
-                        <button onclick="adicionarTurbine('bebidas', ${index})" class="btn-turbine">+ Add</button>
-                    </div>`;
-                });
-            } else {
-                area.innerHTML = `<p style="font-size:12px; color:#999;">Cadastre bebidas para exibir ofertas aqui.</p>`;
+            let categoriasTurbine = ['espetos', 'porcoes', 'caldos', 'bebidas'];
+            let temItem = false;
+
+            categoriasTurbine.forEach(cat => {
+                if(db[cat] && db[cat].length > 0) {
+                    db[cat].forEach((b, index) => {
+                        temItem = true;
+                        area.innerHTML += `
+                        <div class="turbine-card">
+                            <img src="${b.foto}" class="turbine-img" onerror="this.src='https://via.placeholder.com/70'">
+                            <div class="turbine-nome">${b.nome}</div>
+                            <div class="turbine-preco">R$ ${toReal(b.preco)}</div>
+                            <button onclick="adicionarTurbine('${cat}', ${index})" class="btn-turbine">+ Add</button>
+                        </div>`;
+                    });
+                }
+            });
+
+            if(!temItem) {
+                area.innerHTML = `<p style="font-size:12px; color:#999;">Cadastre produtos nas categorias para exibir ofertas aqui.</p>`;
             }
         }
 
@@ -442,7 +447,7 @@
                 total: p.preco, 
                 adicionais: [] 
             });
-            abrirCheckout(); // Atualiza a tela de checkout na hora
+            abrirCheckout(); 
             atualizarCarrinhoFlutuante();
             mostrarAlertaSucesso(`${p.nome} adicionado!`);
         }
@@ -466,7 +471,7 @@
             document.getElementById('checkout-total').innerText = toReal(t);
             verificarTroco(); 
             
-            renderizarTurbine(); // Carrega os produtos da esteira
+            renderizarTurbine(); 
             
             document.getElementById('modal-checkout').classList.add('aberto');
         }
@@ -502,7 +507,7 @@
         }
 
         function enviarWhatsApp() {
-            // NÚMERO DO WHATSAPP (COM 9)
+            // NÚMERO DO WHATSAPP AQUI
             let numeroLoja = "5561982680862"; 
 
             let txt = "*NOVO PEDIDO*\n\n", t = 0;
