@@ -12,7 +12,7 @@
 
         /* HEADER E FOTOS */
         .topo-loja { background: var(--amarelo); padding-bottom: 60px; text-align: center; position: relative; border-bottom: 4px solid #fff; }
-        .banner-loja { height: 140px; background: var(--marrom); width: 100%; object-fit: cover; }
+        .banner-loja { height: 140px; width: 100%; object-fit: cover; }
         .perfil-loja { width: 105px; height: 105px; position: absolute; left: 50%; transform: translateX(-50%); bottom: -50px; z-index: 10; }
         .perfil-loja img { width: 100%; height: 100%; border-radius: 50%; border: 4px solid white; object-fit: cover; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
@@ -76,7 +76,7 @@
     </div>
 
     <div class="topo-loja">
-        <img src="banner.jpg" class="banner-loja" onerror="this.src='https://via.placeholder.com/800x140?text=Banner'">
+        <img src="banner.png" class="banner-loja" onerror="this.src='https://via.placeholder.com/800x140?text=Banner'">
         <div class="perfil-loja">
             <img src="perfil.png" onerror="this.src='https://via.placeholder.com/100?text=LOGO'">
         </div>
@@ -218,16 +218,9 @@
                     ]
                 }
             ],
-            espetos: [
-                // Coloque seus espetos aqui! Exemplo:
-                // { nome: "Espeto de Carne", desc: "Acompanha farofa", preco: 8.00, foto: "carne.png", adicionais: [] }
-            ],
-            porcoes: [
-                // Coloque suas porções aqui!
-            ],
-            caldos: [
-                // Coloque seus caldos aqui!
-            ],
+            espetos: [],
+            porcoes: [],
+            caldos: [],
             bebidas: [
                 {
                     nome: "Ptchula",
@@ -242,7 +235,9 @@
 
         let abaAtual = 'destaques', itemAtual = null, carrinho = [], qtdAtual = 1, entregaAtiva = true;
 
-        // INICIALIZAÇÃO INSTANTÂNEA
+        // =========================================================
+        // CARREGAMENTO IMEDIATO: TIRO DE LARGADA
+        // =========================================================
         document.addEventListener("DOMContentLoaded", () => {
             verificarStatus();
             mudarPara('destaques');
@@ -257,7 +252,6 @@
 
         function toReal(v) { return (v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2}); }
 
-        // ALERTA DE SUCESSO (ESTILO APP)
         function mostrarAlertaSucesso(msg) {
             document.getElementById('alert-icon').innerText = "✅";
             document.getElementById('alert-title').innerText = "Sucesso!";
@@ -272,7 +266,6 @@
             document.getElementById('custom-alert').style.display = 'flex';
         }
 
-        // STATUS INTELIGENTE
         function verificarStatus() {
             try {
                 let txt = document.getElementById('horario-loja').innerText;
@@ -309,7 +302,6 @@
         }
         setInterval(verificarStatus, 60000); 
 
-        // RENDERIZAÇÃO DAS ABAS
         function mudarPara(cat) {
             abaAtual = cat;
             document.querySelectorAll('.nav-tabs span').forEach(s => s.classList.remove('ativa'));
@@ -408,10 +400,6 @@
             }
         }
 
-        // ==========================================
-        // RENDERIZA A ESTEIRA "TURBINE SEU PEDIDO"
-        // Agora varre Espetos, Porções, Caldos e Bebidas
-        // ==========================================
         function renderizarTurbine() {
             let area = document.getElementById('lista-turbine');
             area.innerHTML = '';
@@ -507,7 +495,6 @@
         }
 
         function enviarWhatsApp() {
-            // NÚMERO DO WHATSAPP AQUI
             let numeroLoja = "5561982680862"; 
 
             let txt = "*NOVO PEDIDO*\n\n", t = 0;
